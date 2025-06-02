@@ -26,5 +26,5 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):
-        return f'{self.Post.title}'
+        return self.post.title
 

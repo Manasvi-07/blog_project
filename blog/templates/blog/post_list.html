@@ -1,0 +1,22 @@
+{% extends 'home.html' %}
+
+{% block title %}All Posts{% endblock %}
+
+{% block content %}
+<h2>All Blog Posts</h2>
+
+{% if posts %}
+    <ul>
+    {% for post in posts %}
+        <li>
+            <h3>{{ post.title }}</h3>
+            <p>by {{ post.author.username }} on {{post.created}}</p>
+            <p>{{ post.content|truncatewords:30 }}</p>
+            <a href="{% url 'post_detail' post.id %}">Read more</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No posts yet.</p>
+{% endif %}
+{% endblock %}

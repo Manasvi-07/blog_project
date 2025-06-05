@@ -1,39 +1,15 @@
 {% extends 'home.html' %}
 
-{% block title %}All Posts{% endblock %}
+{% block title %}All Blog Posts{% endblock %}
 
 {% block content %}
 <h2>All Blog Posts</h2>
 
-{% if posts %}
-    <ul>
+<main>
     {% for post in posts %}
-        <li>
-            <h3>{{ post.title }}</h3>
-            <p>by {{ post.author.username }} on {{post.created}}</p>
-            <p>{{ post.content|truncatewords:30 }}</p>
-            {% comment %} <a href="{% url 'post_list' post.id %}">Read more</a> {% endcomment %}
-        </li>
+        <div class="post">  </div>
+    {% empty %}
+        <p>No posts yet.</p>
     {% endfor %}
-    </ul>
-    <div class="pagination">
-        <span class="step-links">
-            {% if posts.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ posts.previous_page_number }}">previous</a>
-            {% endif %}
-    
-            <span class="current">
-                Page {{ posts.number }} of {{ posts.paginator.num_pages }}
-            </span>
-    
-            {% if posts.has_next %}
-                <a href="?page={{ posts.next_page_number }}">next</a>
-                <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
-    </div>
-{% else %}
-    <p>No posts yet.</p>
-{% endif %}
+</main>
 {% endblock %}

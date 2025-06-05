@@ -5,6 +5,7 @@ from .forms import RegisterForm, PostForm
 from .models import Post
 from django.views.generic.list import ListView
 from django.views.generic.edit import  CreateView, UpdateView, DeleteView
+from django.contrib.auth.views import LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 
@@ -37,15 +38,19 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'registration/login.html',{'form':form})
 
-def logout_view(request):
-    logout(request)
-    return redirect('login')
+class LogoutView(LogoutView):
+    next_page = reverse_lazy('login')
+    template_name = 'logout.html'
+    allow_get = True
 
-class post_list(ListView):
+class PostList(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
-    ordering = ['-created']
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Post.objects.filter(author = self.request.user).order_by('-created')
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -55,8 +60,14 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return self.form_valid(form)
+        return super().form_valid(form)
+        
     
+    def form_invalid(self, form):
+        print(form.errors)
+        return super().form_invalid(form)
+    
+
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
@@ -75,3 +86,4 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author or self.request.user.is_superuser
+    

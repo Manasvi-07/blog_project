@@ -49,6 +49,7 @@ class PostList(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
+    paginate_by = 5
     ordering = ['-created']
 
 class PostCreateView(LoginRequiredMixin, CreateView):

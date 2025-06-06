@@ -1,0 +1,15 @@
+{% extends 'home.html' %}
+
+{% block title %}All Blog Posts{% endblock %}
+
+{% block content %}
+<h2>All Blog Posts</h2>
+
+<main>
+    {% for post in posts %}
+        <div class="post">  </div>
+    {% empty %}
+        <p>No posts yet.</p>
+    {% endfor %}
+</main>
+{% endblock %}

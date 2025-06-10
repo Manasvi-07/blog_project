@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      {% block title %}
+        Blog Management System
+      {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{% static 'blog/styles.css' %}" />
+  </head>
+  <body>
+    <nav>
+      {% if request.user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit">Logout</button>
+        </form>| <a href="{% url 'create_post' %}">Create Post</a>
+      {% else %}
+        <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
+      {% endif %}
+    </nav>
+
+    <header>
+      {% block content %}
+        <h1>Welcome to the Blog Management System</h1>
+      {% endblock %}
+    </header>
+
+    <main>
+      {% for post in posts %}
+        <div class="post">
+          <hr>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.content|truncatewords:30 }}</p>
+          <p><strong>Author:</strong> {{ post.author.username }}</p>
+          <p><strong>Created:</strong> {{ post.created|date:'M d, Y H:i' }}</p>
+
+          {% if request.user == post.author or request.user.is_superuser %}
+            <a href="{% url 'edit_post' post.id %}">Edit</a> |
+            <a href="{% url 'delete_post' post.id %}">Delete</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <hr>
+      {% if is_paginated %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+          {% endif %}
+
+          <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </main>
+
+    <footer>&copy; 2025 Your Blog Management System</footer>
+  </body>
+</html>

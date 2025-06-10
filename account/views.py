@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import AuthenticationForm
+from django.views.generic import DetailView
 from django.contrib.auth.models import User
-from .forms import RegisterForm, PostForm
-from .models import Post
+from .forms import RegisterForm, PostForm, CommentForm
+from .models import Post, Category
 from django.views.generic.list import ListView
-from django.views.generic.edit import  CreateView, UpdateView, DeleteView, FormMixin
+from django.views.generic.edit import  CreateView, UpdateView, DeleteView
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
@@ -76,8 +76,6 @@ class PostList(ListView):
     paginate_by = 5
     ordering = ['-created']
 
-
-
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -113,6 +111,27 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         post = self.get_object()
         return self.request.user == post.author or self.request.user.is_superuser
     
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/post_detail.html'
+    context_object_name = 'post'
 
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.get_object()
+        context['comments'] = post.comments.all().order_by('-created')
+        context['form'] = kwargs.get('form') or CommentForm()
+        return context
     
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = self.object
+            comment.author = request.user
+            comment.save()
+            return redirect(reverse_lazy('post_list'))
+        else:
+            print("Form errors:", form.errors)
+        return self.render_to_response(self.get_context_data(form=form))

@@ -33,6 +33,13 @@ p {
     color: #2e445e;
 }
 
+.post-image {
+    max-width: 400px;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+}
+
 footer {
     margin-top: 50px;
     font-size: 14px;

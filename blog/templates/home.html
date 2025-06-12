@@ -57,7 +57,7 @@
               <ul>
                 {% for comment in post.comments.all %}
                   <li>
-                    <strong>{{ comment.author.username }}:</strong> {{ comment.content }}
+                    <strong>{{ comment.author.first_name }}:</strong> {{ comment.content }}
                     <small>({{ comment.created|date:'M d, Y H:i' }})</small>
                   </li>
                 {% empty %}

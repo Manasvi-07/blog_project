@@ -11,7 +11,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["email"]
+        fields = ["first_name","email"]
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -28,6 +28,7 @@ class RegisterForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password"])
+        user.first_name = self.cleaned_data["first_name"]
         if commit:
             user.save()
         return user

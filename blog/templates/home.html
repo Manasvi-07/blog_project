@@ -36,7 +36,7 @@
           <h3>{{ post.title }}</h3>
           <p>{{ post.content|truncatewords:30 }}</p>
           <p>
-            <strong>Author:</strong> {{ post.author.username }}
+            <strong>Author:</strong> {{ post.author.first_name }}
           </p>
           <p>
             <strong>Created:</strong> {{ post.created|date:'M d, Y H:i' }}

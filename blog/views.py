@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.views.generic import DetailView
 from .forms import PostForm, CommentForm
-from .models import Post
+from .models import Post, Category
+from django.db.models import Q
 from django.views.generic.list import ListView
 from django.views.generic.edit import  CreateView, UpdateView, DeleteView
 from django.views import View
@@ -20,6 +21,30 @@ class PostList(ListView):
     context_object_name = 'posts'
     paginate_by = 5
     ordering = ['-created']
+
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category_id = self.request.GET.get('category')
+        search_query = self.request.GET.get('q')
+
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(content__icontains=search_query)
+            )
+
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        context['selected_category'] = self.request.GET.get('category', '')
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post

@@ -1,17 +1,18 @@
-from django import forms
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm
-from .models import Post
-
-class RegisterForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password']
-
+from django import forms 
+from .models import Post, Comment
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'image', 'category']
+        fields = ["title", "content", "image", "category"]
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["content"]
+        widgets = {
+            "content": forms.Textarea(
+                attrs={"rows": 3, "placeholder": "Write a comment..."}
+            ),
+        }

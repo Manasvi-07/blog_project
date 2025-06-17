@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length = 200)
@@ -10,7 +10,7 @@ class Category(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length = 200)
     content = models.TextField()
-    author = models.ForeignKey(User, related_name = 'posts', on_delete = models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,related_name = 'posts',on_delete = models.CASCADE)
     created = models.DateTimeField(auto_now_add = True)
     updated = models.DateTimeField(auto_now = True)
     image = models.ImageField(upload_to = 'post_images/', blank=True, null=True)
@@ -21,7 +21,7 @@ class Post(models.Model):
     
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
-    author = models.ForeignKey(User, related_name='comments',on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='comments',on_delete=models.CASCADE)
     content = models.TextField()
     created = models.DateTimeField(auto_now_add = True)
 
